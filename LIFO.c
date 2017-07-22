@@ -101,6 +101,7 @@ LIFO popLIFO(LIFO l) {
 	return l;
 }
 
+/*****DESTRUCTOR*****/
 void deleteLIFO(LIFO l) {
 
 	while(!isLIFOEmpty(l)) {
