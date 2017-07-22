@@ -2,7 +2,7 @@
 /**	File: LIFO.c					**/
 /**	Author: Mael "ADDRMeridan" MOULIN		**/
 /**	Made for holiday practice			**/
-/**	Last Modified: 18/07/2017			**/
+/**	Last Modified: 22/07/2017			**/
 /**	Music: Buckethead - Electric Tears		**/
 /**	Drink: Coca-Cola				**/
 /*********************************************************/
@@ -16,7 +16,7 @@
 //Cell structure
 struct cell {
 	
-	FIFO_el el;
+	LIFO_el el;
 	struct cell *next;
 };
 
@@ -56,20 +56,55 @@ bool isLIFOFull(LIFO l) {
 
 LIFO_el topLIFO(LIFO l) {
 
-	return l->first;
+	return l->first->el;
 }
 
-LIFO addLIFO(LIFO_el toAdd, LIFO l) {
+LIFO addToLIFO(LIFO_el toAdd, LIFO l) {
 
-	struct cell tmp;
-	tmp->el = toAdd;
-	tmp->next = topLIFO(l);
-
+	//Check if enough space
+	if(isLIFOFull(l)) {
+		fprintf(stderr, ANSI_RED"addToLIFO: given LIFO is already"
+			" full. LIFO not modified.\n"ANSI_RESET);
+		return l;	
+	}
+	//Init New Cell
+	struct cell *tmp = malloc(sizeof(struct cell));
+	if(tmp == NULL) {
+		fprintf(stderr, ANSI_RED"addToLIFO: failed to malloc"
+			" a new cell.\n"ANSI_RESET);
+	} else {
+		tmp->el = toAdd;
+		tmp->next = l->first;
+		//Adding new cell
+		l->first = tmp;
+		++l->nbEl;	
+	}
 	return l;
 }
 
-//TO REMOVE BEFORE PULLING
-int main(int argc, char *argv[]) {
+unsigned int nbElLIFO(LIFO l) {
 
-	return 0;
+	return l->nbEl;
+}
+
+LIFO popLIFO(LIFO l) {
+
+	if(isLIFOEmpty(l)) {
+		fprintf(stderr, ANSI_RED"popLIFO: LIFO is empty."
+			" LIFO not modified.\n"ANSI_RESET);
+	} else {
+		struct cell *tmp = l->first;
+		l->first = l->first->next;
+		free(tmp);
+		--l->nbEl;
+	}
+	return l;
+}
+
+void deleteLIFO(LIFO l) {
+
+	while(!isLIFOEmpty(l)) {
+		l = popLIFO(l);
+	}
+	free(l);
 }
